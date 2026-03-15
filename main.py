@@ -767,24 +767,26 @@ if(_MIwaYmN){ _zoomByFollow=true; map.setView([lat,lng], _dNshsS, {animate:true,
 if(_qaUmTh){ _oPCM(vvtqYn); _sYPP(lat,lng); }
 }
 function _PKWUvBb(lat,lng,vZbDVMl,vnUybGV){
-const hasHeading = vZbDVMl !== null && vZbDVMl !== undefined && vZbDVMl !== 0;
 const rot = vZbDVMl||0;
-// Pulsing halo + arrow chevron pointing in direction of travel
-const html=`<div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
-  <!-- Halo animé -->
-  <div style="position:absolute;width:48px;height:48px;border-radius:50%;background:rgba(14,165,233,.18);animation:userPulse 2s ease-in-out infinite;"></div>
-  <!-- Cercle principal -->
-  <div style="position:absolute;width:28px;height:28px;border-radius:50%;background:#0ea5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(14,165,233,.6);"></div>
-  <!-- Flèche de direction (visible seulement si heading connu) -->
-  ${hasHeading ? `<div style="position:absolute;width:0;height:0;transform:rotate(${rot}deg);transform-origin:center 22px;">
-    <svg width="12" height="18" viewBox="0 0 12 18" style="position:absolute;left:-6px;top:-22px;" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 0 L12 18 L6 13 L0 18 Z" fill="#0ea5e9" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+const html=`<div style="position:relative;width:52px;height:52px;display:flex;align-items:center;justify-content:center;">
+  <!-- Halo pulsé -->
+  <div style="position:absolute;width:52px;height:52px;border-radius:50%;background:rgba(14,165,233,.2);animation:userPulse 2.2s ease-in-out infinite;"></div>
+  <!-- Disque principal avec flèche intégrée, rotate selon heading -->
+  <div style="
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(145deg,#38bdf8,#0284c7);
+    border:3px solid #fff;
+    box-shadow:0 3px 14px rgba(14,165,233,.65),0 1px 4px rgba(0,0,0,.25);
+    display:flex;align-items:center;justify-content:center;
+    transform:rotate(${rot}deg);
+    transition:transform .4s ease;
+  ">
+    <svg width="16" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 1 L15 19 L8 14.5 L1 19 Z" fill="white" opacity=".95"/>
     </svg>
-  </div>` : ''}
-  <!-- Point blanc central -->
-  <div style="position:absolute;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>
+  </div>
 </div>`;
-const icon=L.divIcon({className:'',html,iconSize:[48,48],iconAnchor:[24,24]});
+const icon=L.divIcon({className:'',html,iconSize:[52,52],iconAnchor:[26,26]});
 if(!_ZjCb){
 _ZjCb=L.marker([lat,lng],{icon,zIndexOffset:9999}).addTo(map);
 _FfybzS=L.circle([lat,lng],{radius:vnUybGV||20,color:vqCsex,weight:1,fillOpacity:.06}).addTo(map);
