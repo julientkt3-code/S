@@ -360,6 +360,8 @@ def index():
   /* Ligne de proximité animée */
   @keyframes dashMove{to{stroke-dashoffset:-34}}
   .leaflet-overlay-pane svg path.prox-animated{animation:dashMove 1s linear infinite}
+  /* Position utilisateur */
+  @keyframes userPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.6);opacity:.15}}
 
   /* ═══ MODE TABLEAU DE BORD ═══ */
   #dashboard{
@@ -765,17 +767,24 @@ if(_MIwaYmN){ _zoomByFollow=true; map.setView([lat,lng], _dNshsS, {animate:true,
 if(_qaUmTh){ _oPCM(vvtqYn); _sYPP(lat,lng); }
 }
 function _PKWUvBb(lat,lng,vZbDVMl,vnUybGV){
-const vqCsex = _ogSfm ? '#0a84ff' : '#007aff';
-const vxTJifAn = _ogSfm ? 'rgba(10,132,255,.2)' : 'rgba(0,122,255,.15)';
-const icon=L.divIcon({
-className:'',
-html:`<svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${vZbDVMl||0}deg)">
-<circle cx="22" cy="22" r="20" vqCsex="${vxTJifAn}" stroke="${vqCsex}" stroke-width="2.5"/>
-<circle cx="22" cy="22" r="5" vqCsex="${vqCsex}"/>
-<path d="M22 5 L29 33 L22 27 L15 33 Z" vqCsex="${vqCsex}"/>
-</svg>`,
-iconSize:[44,44], iconAnchor:[22,22]
-});
+const hasHeading = vZbDVMl !== null && vZbDVMl !== undefined && vZbDVMl !== 0;
+const rot = vZbDVMl||0;
+// Pulsing halo + arrow chevron pointing in direction of travel
+const html=`<div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+  <!-- Halo animé -->
+  <div style="position:absolute;width:48px;height:48px;border-radius:50%;background:rgba(14,165,233,.18);animation:userPulse 2s ease-in-out infinite;"></div>
+  <!-- Cercle principal -->
+  <div style="position:absolute;width:28px;height:28px;border-radius:50%;background:#0ea5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(14,165,233,.6);"></div>
+  <!-- Flèche de direction (visible seulement si heading connu) -->
+  ${hasHeading ? `<div style="position:absolute;width:0;height:0;transform:rotate(${rot}deg);transform-origin:center 22px;">
+    <svg width="12" height="18" viewBox="0 0 12 18" style="position:absolute;left:-6px;top:-22px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 0 L12 18 L6 13 L0 18 Z" fill="#0ea5e9" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+  </div>` : ''}
+  <!-- Point blanc central -->
+  <div style="position:absolute;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>
+</div>`;
+const icon=L.divIcon({className:'',html,iconSize:[48,48],iconAnchor:[24,24]});
 if(!_ZjCb){
 _ZjCb=L.marker([lat,lng],{icon,zIndexOffset:9999}).addTo(map);
 _FfybzS=L.circle([lat,lng],{radius:vnUybGV||20,color:vqCsex,weight:1,fillOpacity:.06}).addTo(map);
