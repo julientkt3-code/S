@@ -465,7 +465,7 @@ def index():
 </head>
 <body>
 
-<div id="status-pill"><div id="vis-dot"></div><span id="vis-label">Surveillance active</span></div>
+<div id="status-pill"><div id="vis-dot"></div><span id="vis-label">✓ Zone libre</span></div>
 
 <!-- Overlay géolocalisation -->
 <div id="geo-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;gap:20px;">
@@ -716,26 +716,35 @@ document.getElementById('fab-settings').classList.remove('active');
 _PsCGx(); _TAMZv();
 _qHfDMv();
 }
+let _watchId=null;
 function _qHfDMv(){
 if(!navigator.geolocation){ return; }
+// Try silently first — if already granted, start immediately
 if(navigator.permissions){
 navigator.permissions.query({name:'geolocation'}).then(r=>{
-if(r.state==='granted'){ _cckzQkI(); }
-else { _pkwIq(); }
-}).catch(()=>_pkwIq());
+if(r.state==='granted'){ startTracking(); }
+else { document.getElementById('geo-overlay').style.display='flex'; }
+r.onchange=()=>{ if(r.state==='granted') startTracking(); };
+}).catch(()=>{ document.getElementById('geo-overlay').style.display='flex'; });
 } else {
-_pkwIq();
+// No permissions API (iOS Safari) — try to get position to trigger dialog
+navigator.geolocation.getCurrentPosition(
+()=>startTracking(),
+()=>{ document.getElementById('geo-overlay').style.display='flex'; },
+{enableHighAccuracy:true,timeout:3000}
+);
 }
 }
-function _pkwIq(){
+function startTracking(){
+document.getElementById('geo-overlay').style.display='none';
+if(_watchId!==null) return; // already watching
+_watchId=navigator.geolocation.watchPosition(_MAiS, err=>{
+console.warn('GPS:',err.message);
+if(err.code===1){ // permission denied
+_watchId=null;
 document.getElementById('geo-overlay').style.display='flex';
 }
-function _cckzQkI(){
-document.getElementById('geo-overlay').style.display='none';
-navigator.geolocation.watchPosition(_MAiS, err=>{
-console.warn('GPS:',err.message);
-if(err.code===1) _pkwIq();
-}, {enableHighAccuracy:true,maximumAge:0,timeout:10000});
+}, {enableHighAccuracy:true,maximumAge:1000,timeout:15000});
 }
 let _nhbEqH=0;
 function _MAiS(pos){
@@ -838,12 +847,13 @@ const lbl=document.getElementById('vis-label');
 dot.className='';
 if(totalScore>=0.6){
 dot.classList.add('red');
-lbl.textContent=camScore>=radarScore?'Caméra active':'Zone de radar';
+lbl.textContent=camScore>=radarScore?'📷 Caméra détectée':'🚨 Radar en zone';
 } else if(totalScore>=0.25){
 dot.classList.add('orange');
-lbl.textContent='Capteur en portée';
+lbl.textContent='⚠️ Capteur proche';
 } else {
-lbl.textContent='Surveillance active';
+// green by default — no threat
+lbl.textContent='✓ Zone libre';
 }
 if(_qaUmTh) _KzEx();
 }
